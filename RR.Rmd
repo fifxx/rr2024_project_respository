@@ -348,8 +348,9 @@ kable(data)
     Python) are also very close, suggesting that the overall
     significance of the model is consistent between both
     implementations.
-    
-Using our parameter estimates, we can now write our estimated relationship as
+
+Using our parameter estimates, we can now write our estimated
+relationship as
 
 ![](images/formula2-01.png)
 
@@ -358,20 +359,38 @@ between the two software environments. Overall, the results are highly
 consistent, demonstrating that the regression analysis yields similar
 outcomes regardless of whether R or Python is used.
 
-The comparison indicates that the results from the R and Python OLS regression models are consistent. Both approaches effectively illustrate the same relationship and show similar patterns of predicted and observed values. In conclusion, both R and Python provide consistent and reliable results for the OLS regression analysis, confirming the robustness of the findings across different software environments.
+The comparison indicates that the results from the R and Python OLS
+regression models are consistent. Both approaches effectively illustrate
+the same relationship and show similar patterns of predicted and
+observed values. In conclusion, both R and Python provide consistent and
+reliable results for the OLS regression analysis, confirming the
+robustness of the findings across different software environments.
 
 # 7. Multivariate Regression Model
 
-In this section, we extend the linear regression model to include additional explanatory variables. This multivariate regression model allows us to control for other factors that might influence the relationship between institutional quality and economic outcomes.
+In this section, we extend the linear regression model to include
+additional explanatory variables. This multivariate regression model
+allows us to control for other factors that might influence the
+relationship between institutional quality and economic outcomes.
 
-So far, we have only accounted for institutions affecting economic performance. Almost certainly, there are numerous other factors affecting GDP that are not included in our model. Leaving out variables that affect `logpgp95` will result in omitted variable bias, yielding biased and inconsistent parameter estimates.
+So far, we have only accounted for institutions affecting economic
+performance. Almost certainly, there are numerous other factors
+affecting GDP that are not included in our model. Leaving out variables
+that affect `logpgp95` will result in omitted variable bias, yielding
+biased and inconsistent parameter estimates.
 
-We can extend our bivariate regression model to a multivariate regression model by adding other factors that may affect `logpgp95`. We consider other factors such as:
+We can extend our bivariate regression model to a multivariate
+regression model by adding other factors that may affect `logpgp95`. We
+consider other factors such as:
 
-* The effect of climate on economic outcomes; latitude is used to proxy this.
-* Differences that affect both economic performance and institutions, e.g., cultural, historical, etc.; controlled for with the use of continent dummies.
+-   The effect of climate on economic outcomes; latitude is used to
+    proxy this.
+-   Differences that affect both economic performance and institutions,
+    e.g., cultural, historical, etc.; controlled for with the use of
+    continent dummies.
 
-We use a different dataset for this part of the analysis, which includes additional variables:
+We use a different dataset for this part of the analysis, which includes
+additional variables:
 
 ```{r}
 df2 <- read_dta('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable2.dta?raw=true')
@@ -380,11 +399,13 @@ df2 <- df2 %>%
   mutate(const = 1)
 ```
 
-Next, we define three sets of explanatory variables to be used in separate regression models:
+Next, we define three sets of explanatory variables to be used in
+separate regression models:
 
-* **Model 1**: Includes the constant term and `avexp`r.
-* **Model 3**: Includes the constant term, `avexp`r, and `lat_abst`.
-* **Model 4**: Includes the constant term, `avexpr`, `lat_abst`, `asia`, `africa`, and `other`.
+-   **Model 1**: Includes the constant term and `avexp`r.
+-   **Model 3**: Includes the constant term, `avexp`r, and `lat_abst`.
+-   **Model 4**: Includes the constant term, `avexpr`, `lat_abst`,
+    `asia`, `africa`, and `other`.
 
 ```{r}
 reg1 <- lm(logpgp95 ~ const + avexpr, data = df2)
@@ -403,11 +424,22 @@ stargazer(reg1, reg2, reg3,
           digits = 2)
 ```
 
-* **Model 1**: The regression includes only the constant term and avexpr. The coefficient for avexpr is positive and highly significant, suggesting that higher protection against expropriation is associated with higher GDP per capita.
+-   **Model 1**: The regression includes only the constant term and
+    avexpr. The coefficient for avexpr is positive and highly
+    significant, suggesting that higher protection against expropriation
+    is associated with higher GDP per capita.
 
-* **Model 3**: This model adds lat_abst to control for the effect of climate on economic outcomes. The coefficient for lat_abst is positive but only marginally significant.
+-   **Model 3**: This model adds lat_abst to control for the effect of
+    climate on economic outcomes. The coefficient for lat_abst is
+    positive but only marginally significant.
 
-* **Model 4**: The most comprehensive model includes asia, africa, and other dummy variables to control for continent-level differences. The coefficient for africa is negative and highly significant, indicating that, holding other factors constant, African countries have lower GDP per capita. The coefficient for avexpr remains positive and significant, though its magnitude decreases slightly compared to the previous models.
+-   **Model 4**: The most comprehensive model includes asia, africa, and
+    other dummy variables to control for continent-level differences.
+    The coefficient for africa is negative and highly significant,
+    indicating that, holding other factors constant, African countries
+    have lower GDP per capita. The coefficient for avexpr remains
+    positive and significant, though its magnitude decreases slightly
+    compared to the previous models.
 
 ```{r}
 multivariate_data <- data.frame(
@@ -424,8 +456,25 @@ multivariate_data <- data.frame(
 kable(multivariate_data, col.names = c("Coefficient", "Model 1 in R", "Model 1 in Python", "Model 3 in R", "Model 3 in Python", "Model 4 in R", "Model 4 in Python"), align = 'c')
 ```
 
-The table above compares the results from the multivariate regression models conducted in R and Python for three different models. The coefficients, along with their corresponding R-squared values, are presented side-by-side to facilitate direct comparison.
+The table above compares the results from the multivariate regression
+models conducted in R and Python for three different models. The
+coefficients, along with their corresponding R-squared values, are
+presented side-by-side to facilitate direct comparison.
 
-The results are remarkably consistent between R and Python across all models. The coefficients and R-squared values are identical, demonstrating that the regression analysis yields consistent outcomes regardless of the software used. The inclusion of additional variables (latitude and continent dummies) provides a more nuanced understanding of the factors influencing economic outcomes. It shows how the impact of institutional quality (avexpr) changes when accounting for other relevant factors.
+The results are remarkably consistent between R and Python across all
+models. The coefficients and R-squared values are identical,
+demonstrating that the regression analysis yields consistent outcomes
+regardless of the software used. The inclusion of additional variables
+(latitude and continent dummies) provides a more nuanced understanding
+of the factors influencing economic outcomes. It shows how the impact of
+institutional quality (avexpr) changes when accounting for other
+relevant factors.
 
-The multivariate regression models confirm the positive relationship between institutional quality and economic outcomes, as measured by GDP per capita. The results are consistent across both R and Python, providing robust evidence that better institutional quality is associated with higher economic performance. The inclusion of additional variables such as latitude and continent dummies further refines the analysis, highlighting the importance of considering multiple factors in understanding economic outcomes.
+The multivariate regression models confirm the positive relationship
+between institutional quality and economic outcomes, as measured by GDP
+per capita. The results are consistent across both R and Python,
+providing robust evidence that better institutional quality is
+associated with higher economic performance. The inclusion of additional
+variables such as latitude and continent dummies further refines the
+analysis, highlighting the importance of considering multiple factors in
+understanding economic outcomes.
