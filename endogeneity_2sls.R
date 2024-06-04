@@ -31,9 +31,11 @@ library(lmtest)
 
 # First stage
 df4 <- read_dta('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
+
 # Only complete data, indicated by baseco = 1, is used for estimation
 df4 <- df4 %>%
   filter(baseco == 1)
+
 # Add constant variable
 df4$const <- 1
 
