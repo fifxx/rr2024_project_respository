@@ -113,6 +113,9 @@ Before starting, first we should install all necessary packages,
 #install(broom)
 #install(stargazer)
 #install(knitr)
+#install(lmtest)
+#install(AER)
+#install(ggrepel)
 ```
 
 and load them into memory.
@@ -125,6 +128,9 @@ library(ggrepel)
 library(broom)
 library(stargazer)
 library(knitr)
+library(lmtest)
+library(AER)
+library(ggrepel)
 ```
 
 Now let's import the data and have a look on it.
@@ -478,3 +484,40 @@ associated with higher economic performance. The inclusion of additional
 variables such as latitude and continent dummies further refines the
 analysis, highlighting the importance of considering multiple factors in
 understanding economic outcomes.
+
+
+# 8. Endogeneity
+
+Dr. Acemoglu identified a significant issue with Ordinary Least Squares (OLS) regression models: endogeneity, which leads to biased and inconsistent estimates. Specifically, there is a two-way relationship between institutions and economic outcomes:
+
+- Wealthier nations tend to develop better institutions
+- Factors affecting income might also influence institutional variations
+- Institutional indices might be biased, as analysts could link higher incomes with better institutions
+
+To tackle endogeneity, we used a two-stage least squares (2SLS) regression. This method replaces the endogenous variable avexpr(i) with an instrumental variable that:
+
+- Correlates with avexpr(i)
+- Is not correlated with the error term, avoiding direct effects on the dependent variable and thus preventing correlation with u(i)
+
+These new regressors, known as instruments, help eliminate endogeneity in assessing institutional differences. We used settler mortality rates as an instrument for institutional differences. Thee hypothesis suggests that higher mortality rates among colonizers led to the establishment of more extractive institutions, with less protection against expropriation, which persist today. A scatterplot supports this hypothesis, showing a negative correlation between protection against expropriation and settler mortality rates, meeting the criteria for a valid instrument.
+
+This analysis replicates their methodology, applying 2SLS regression to address endogeneity and evaluate the impact of institutional differences on economic outcomes.
+
+```{r}
+# Subsetting data to remove rows with missing values in logem4 and avexpr
+df1_subset2 <- df[complete.cases(df[c("logem4", "avexpr")]) , ]
+X <- df1_subset2$logem4
+y <- df1_subset2$avexpr
+labels <- df1_subset2$shortnam
+
+# Scatter plot with labels
+ggplot(df1_subset2, aes(x = logem4, y = avexpr)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_text_repel(aes(label = labels), hjust = 0, vjust = 0, , size = 3) +
+  labs(title = "Figure 3: First-stage relationship between settler mortality and expropriation risk",
+       x = "Log of Settler Mortality",
+       y = "Average Expropriation Risk 1985-95") +
+  theme_bw()
+```
+![](images/scatter2-01.png)
