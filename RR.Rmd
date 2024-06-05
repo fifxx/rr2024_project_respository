@@ -593,6 +593,15 @@ stargazer(model_fs, type = "text", title = "First-Stage Regression Results (2SLS
           digits = 2)
 ```
 
+```{r}
+data <- data.frame(
+  Coefficient = c("The intercept", "logem4(i)", "R-squared", "F-statistic"),
+  Results_in_R = c("9.34", "-0.61", "0.27", "22.95"),
+  Results_in_Python = c("9.3414", "-0.6068", "0.270", "22.95")
+)
+kable(data)
+```
+
 ## 8.2 Second stage
 
 To proceed, we must obtain the predicted values of avexpr(i). These
@@ -614,6 +623,15 @@ stargazer(model_ss, type = "text",
           covariate.labels = c("Constant", "Predicted Average Expropriation Risk"),
           dep.var.labels = "Log GDP per Capita",
           digits = 2)
+```
+
+```{r}
+data <- data.frame(
+  Coefficient = c("The intercept", "avexpr(i)", "R-squared", "F-statistic"),
+  Results_in_R = c("1.91", "0.94", "0.48", "56.60"),
+  Results_in_Python = c("1.9097", "0.9443", "0.477", "56.60")
+)
+kable(data)
 ```
 
 The second-stage regression outcomes provide an unbiased and consistent
@@ -639,6 +657,15 @@ stargazer(model_ss, type = "text",
           covariate.labels = c("Average Expropriation Risk", "Constant"),
           dep.var.labels = "Log GDP per Capita",
           digits = 2)
+```
+
+```{r}
+data <- data.frame(
+  Coefficient = c("The intercept", "avexpr(i)", "R-squared"),
+  Results_in_R = c("1.91", "0.94", "0.19"),
+  Results_in_Python = c("1.9097", "0.9443", "0.1870")
+)
+kable(data)
 ```
 
 With our consistent and unbiased estimates, we can deduce from the model
