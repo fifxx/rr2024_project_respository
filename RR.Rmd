@@ -487,22 +487,40 @@ understanding economic outcomes.
 
 # 8. Endogeneity
 
-Dr. Acemoglu identified a significant issue with Ordinary Least Squares (OLS) regression models: endogeneity, which leads to biased and inconsistent estimates. Specifically, there is a two-way relationship between institutions and economic outcomes:
+Dr. Acemoglu identified a significant issue with Ordinary Least Squares
+(OLS) regression models: endogeneity, which leads to biased and
+inconsistent estimates. Specifically, there is a two-way relationship
+between institutions and economic outcomes:
 
-- Wealthier nations tend to develop better institutions
-- Factors affecting income might also influence institutional variations
-- Institutional indices might be biased, as analysts could link higher incomes with better institutions
+-   Wealthier nations tend to develop better institutions
+-   Factors affecting income might also influence institutional
+    variations
+-   Institutional indices might be biased, as analysts could link higher
+    incomes with better institutions
 
-To tackle endogeneity, we used a two-stage least squares (2SLS) regression. This method replaces the endogenous variable avexpr(i) with an instrumental variable that:
+To tackle endogeneity, we used a two-stage least squares (2SLS)
+regression. This method replaces the endogenous variable avexpr(i) with
+an instrumental variable that:
 
-- Correlates with avexpr(i)
-- Is not correlated with the error term, avoiding direct effects on the dependent variable and thus preventing correlation with u(i)
+-   Correlates with avexpr(i)
+-   Is not correlated with the error term, avoiding direct effects on
+    the dependent variable and thus preventing correlation with u(i)
 
-These new regressors, known as instruments, help eliminate endogeneity in assessing institutional differences. We used settler mortality rates as an instrument for institutional differences. Thee hypothesis suggests that higher mortality rates among colonizers led to the establishment of more extractive institutions, with less protection against expropriation, which persist today. A scatterplot supports this hypothesis, showing a negative correlation between protection against expropriation and settler mortality rates, meeting the criteria for a valid instrument.
+These new regressors, known as instruments, help eliminate endogeneity
+in assessing institutional differences. We used settler mortality rates
+as an instrument for institutional differences. Thee hypothesis suggests
+that higher mortality rates among colonizers led to the establishment of
+more extractive institutions, with less protection against
+expropriation, which persist today. A scatterplot supports this
+hypothesis, showing a negative correlation between protection against
+expropriation and settler mortality rates, meeting the criteria for a
+valid instrument.
 
-This analysis replicates their methodology, applying 2SLS regression to address endogeneity and evaluate the impact of institutional differences on economic outcomes.
+This analysis replicates their methodology, applying 2SLS regression to
+address endogeneity and evaluate the impact of institutional differences
+on economic outcomes.
 
-```{r}
+```{r fig.width=9, message=FALSE, warning=FALSE}
 # Subsetting data to remove rows with missing values in logem4 and avexpr
 df1_subset2 <- df[complete.cases(df[c("logem4", "avexpr")]) , ]
 X <- df1_subset2$logem4
@@ -514,25 +532,43 @@ ggplot(df1_subset2, aes(x = logem4, y = avexpr)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   geom_text_repel(aes(label = labels), hjust = 0, vjust = 0, , size = 3) +
-  labs(title = "Figure 3: First-stage relationship between settler mortality and expropriation risk",
+  labs(title = "Figure 3: First-stage relationship between settler mortality and expropriation risk (made in R)",
        x = "Log of Settler Mortality",
        y = "Average Expropriation Risk 1985-95") +
   theme_bw()
 ```
-![](images/scatter3.png) 
-If settler mortality rates from the 17th to 19th centuries directly affect current GDP, our instrument might not be valid. However there is an argue against this, noting that settler deaths primarily resulted from malaria and yellow fever, with limited impact on local populations. They also observe that disease burdens in regions like Africa or India were not unusually high before colonization, suggesting our instrument remains valid. Therefore, we proceed with 2SLS regression to obtain reliable parameter estimates.
 
-Our findings support those of the original paper, confirming the validity of settler mortality rates as an instrument to address endogeneity concerns.
+![](images/scatter4-01.png)
 
-# First stage
+If settler mortality rates from the 17th to 19th centuries directly
+affect current GDP, our instrument might not be valid. However there is
+an argue against this, noting that settler deaths primarily resulted
+from malaria and yellow fever, with limited impact on local populations.
+They also observe that disease burdens in regions like Africa or India
+were not unusually high before colonization, suggesting our instrument
+remains valid. Therefore, we proceed with 2SLS regression to obtain
+reliable parameter estimates.
 
-In our research, the first stage entails regressing the endogenous variable avexpr(i), on the instrument.
+Our findings support those of the original paper, confirming the
+validity of settler mortality rates as an instrument to address
+endogeneity concerns.
 
-The instrument comprises all exogenous variables in our model, not just the variable being replaced. Taking model 1 as an instance, our instrument consists of a constant and the logarithm of settler mortality rates logem4(i).
+## 8.1 First stage
+
+In our research, the first stage entails regressing the endogenous
+variable avexpr(i), on the instrument.
+
+The instrument comprises all exogenous variables in our model, not just
+the variable being replaced. Taking model 1 as an instance, our
+instrument consists of a constant and the logarithm of settler mortality
+rates logem4(i).
 
 Hence, we will estimate the first-stage regression as:
-![](images/formula3.png){ width=60% }
-For this analysis, we utilize a different dataset stored in "maketable4.dta". We exclusively employ complete data, identified by 
+
+![](images/formula3.png){width="60%"}
+
+For this analysis, we utilize a different dataset stored in
+"maketable4.dta". We exclusively employ complete data, identified by
 baseco=1, for the estimation process.
 
 ```{r}
@@ -549,41 +585,83 @@ df4$const <- 1
 
 # First-stage regression model
 model_fs <- lm(avexpr ~ const + logem4, data = df4, na.action = "drop")
-summary(model_fs)
+
+# Present the results using stargazer
+stargazer(model_fs, type = "text", title = "First-Stage Regression Results (2SLS)", 
+          covariate.labels = c("Constant", "Log of European Settler Mortality"),
+          dep.var.labels = "Average Expropriation Risk",
+          digits = 2)
 ```
 
-# Second stage
+## 8.2 Second stage
 
-To proceed, we must obtain the predicted values of avexpr(i). These predicted values are then substituted for the endogenous variable  avexpr(i) in the original linear model.
+To proceed, we must obtain the predicted values of avexpr(i). These
+predicted values are then substituted for the endogenous variable
+avexpr(i) in the original linear model.
 
 Consequently, our second stage regression takes the following form:
-![](images/formula3-1.png){ width=60% }
+![](images/formula3-1.png){width="60%"}
+
 ```{r}
 # Adding predicted avexpr as a new variable
 df4$predicted_avexpr <- predict(model_fs, newdata = df4)
 
 # Second-stage regression with predicted avexpr
 model_ss <- lm(logpgp95 ~ const + predicted_avexpr, data = df4)
-summary(model_ss)
+
+stargazer(model_ss, type = "text", 
+          title = "Second-Stage Regression Results (2SLS)", 
+          covariate.labels = c("Constant", "Predicted Average Expropriation Risk"),
+          dep.var.labels = "Log GDP per Capita",
+          digits = 2)
 ```
 
-The second-stage regression outcomes provide an unbiased and consistent estimate of the influence of institutions on economic outcomes, mirroring those of the original paper. Notably, the results suggest a more pronounced positive relationship than what the OLS results had indicated.
+The second-stage regression outcomes provide an unbiased and consistent
+estimate of the influence of institutions on economic outcomes,
+mirroring those of the original paper. Notably, the results suggest a
+more pronounced positive relationship than what the OLS results had
+indicated.
 
-Although our parameter estimates are accurate, the standard errors are not. Therefore, conducting 2SLS "manually" (in stages with OLS) is discouraged.
+Although our parameter estimates are accurate, the standard errors are
+not. Therefore, conducting 2SLS "manually" (in stages with OLS) is
+discouraged.
 
-Instead, we will appropriately estimate a 2SLS regression in one step using the ivreg function from the AER package.
+Instead, we will appropriately estimate a 2SLS regression in one step
+using the ivreg function from the AER package.
 
 ```{r}
 # Second-stage regression using Two-Stage Least Squares (2SLS)
 model_ss <- ivreg(logpgp95 ~ avexpr + const | logem4 + const, data = df4)
-summary(model_ss)
+
+# Summary of the second-stage regression using stargazer
+stargazer(model_ss, type = "text", 
+          title = "Second-Stage Regression Results (2SLS)", 
+          covariate.labels = c("Average Expropriation Risk", "Constant"),
+          dep.var.labels = "Log GDP per Capita",
+          digits = 2)
 ```
 
-With our consistent and unbiased estimates, we can deduce from the model that institutional disparities, originating from colonial-era institutions, contribute to variations in income levels among countries today.
+With our consistent and unbiased estimates, we can deduce from the model
+that institutional disparities, originating from colonial-era
+institutions, contribute to variations in income levels among countries
+today.
 
-According to Dr. Acemoglu, a marginal effect of 0.94 suggests that the disparity in the index between Chile and Nigeria (i.e., institutional quality) could lead to a sevenfold difference in income, underscoring the pivotal role of institutions in economic development.
+According to Dr. Acemoglu, a marginal effect of 0.94 suggests that the
+disparity in the index between Chile and Nigeria (i.e., institutional
+quality) could lead to a sevenfold difference in income, underscoring
+the pivotal role of institutions in economic development.
 
 # 9. Summary
 
-In our research we applied basic Ordinary Least Squares (OLS) and Two-Stage Least Squares (2SLS) regression techniques. Our findings reveal that while OLS regression may suffer from endogeneity issues, 2SLS regression offers a solution by addressing this concern. Through 2SLS regression, we obtained consistent and unbiased estimates, allowing us to infer that institutional differences established during colonization significantly contribute to the disparities in income levels among countries today. Our research further illustrate the profound impact of institutions on economic development, emphasizing their pivotal role in shaping the economic landscape. Importantly, our results fully reproduce the findings of Dr. Acemoglu, validating the robustness of our analysis.
-
+In our research we applied basic Ordinary Least Squares (OLS) and
+Two-Stage Least Squares (2SLS) regression techniques. Our findings
+reveal that while OLS regression may suffer from endogeneity issues,
+2SLS regression offers a solution by addressing this concern. Through
+2SLS regression, we obtained consistent and unbiased estimates, allowing
+us to infer that institutional differences established during
+colonization significantly contribute to the disparities in income
+levels among countries today. Our research further illustrate the
+profound impact of institutions on economic development, emphasizing
+their pivotal role in shaping the economic landscape. Importantly, our
+results fully reproduce the findings of Dr. Acemoglu, validating the
+robustness of our analysis.
