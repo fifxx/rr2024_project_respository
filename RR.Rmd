@@ -567,5 +567,23 @@ model_ss <- lm(logpgp95 ~ const + predicted_avexpr, data = df4)
 summary(model_ss)
 ```
 
-The second-stage regression results provide us with an unbiased and consistent estimate of the impact of institutions on economic outcomes. Our findings align with those of the original paper, affirming the robustness of the analysis.
+The second-stage regression outcomes provide an unbiased and consistent estimate of the influence of institutions on economic outcomes, mirroring those of the original paper. Notably, the results suggest a more pronounced positive relationship than what the OLS results had indicated.
+
+Although our parameter estimates are accurate, the standard errors are not. Therefore, conducting 2SLS "manually" (in stages with OLS) is discouraged.
+
+Instead, we will appropriately estimate a 2SLS regression in one step using the ivreg function from the AER package.
+
+```{r}
+# Second-stage regression using Two-Stage Least Squares (2SLS)
+model_ss <- ivreg(logpgp95 ~ avexpr + const | logem4 + const, data = df4)
+summary(model_ss)
+```
+
+With our consistent and unbiased estimates, we can deduce from the model that institutional disparities, originating from colonial-era institutions, contribute to variations in income levels among countries today.
+
+According to Dr. Acemoglu, a marginal effect of 0.94 suggests that the disparity in the index between Chile and Nigeria (i.e., institutional quality) could lead to a sevenfold difference in income, underscoring the pivotal role of institutions in economic development.
+
+# 9. Summary
+
+In our research we applied basic Ordinary Least Squares (OLS) and Two-Stage Least Squares (2SLS) regression techniques. Our findings reveal that while OLS regression may suffer from endogeneity issues, 2SLS regression offers a solution by addressing this concern. Through 2SLS regression, we obtained consistent and unbiased estimates, allowing us to infer that institutional differences established during colonization significantly contribute to the disparities in income levels among countries today. Our research further illustrate the profound impact of institutions on economic development, emphasizing their pivotal role in shaping the economic landscape. Importantly, our results fully reproduce the findings of Dr. Acemoglu, validating the robustness of our analysis.
 
