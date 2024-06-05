@@ -485,7 +485,6 @@ variables such as latitude and continent dummies further refines the
 analysis, highlighting the importance of considering multiple factors in
 understanding economic outcomes.
 
-
 # 8. Endogeneity
 
 Dr. Acemoglu identified a significant issue with Ordinary Least Squares (OLS) regression models: endogeneity, which leads to biased and inconsistent estimates. Specifically, there is a two-way relationship between institutions and economic outcomes:
@@ -520,4 +519,53 @@ ggplot(df1_subset2, aes(x = logem4, y = avexpr)) +
        y = "Average Expropriation Risk 1985-95") +
   theme_bw()
 ```
-![](images/scatter2-01.png)
+![](images/scatter3.png) 
+If settler mortality rates from the 17th to 19th centuries directly affect current GDP, our instrument might not be valid. However there is an argue against this, noting that settler deaths primarily resulted from malaria and yellow fever, with limited impact on local populations. They also observe that disease burdens in regions like Africa or India were not unusually high before colonization, suggesting our instrument remains valid. Therefore, we proceed with 2SLS regression to obtain reliable parameter estimates.
+
+Our findings support those of the original paper, confirming the validity of settler mortality rates as an instrument to address endogeneity concerns.
+
+# First stage
+
+In our research, the first stage entails regressing the endogenous variable avexpr(i), on the instrument.
+
+The instrument comprises all exogenous variables in our model, not just the variable being replaced. Taking model 1 as an instance, our instrument consists of a constant and the logarithm of settler mortality rates logem4(i).
+
+Hence, we will estimate the first-stage regression as:
+![](images/formula3.png){ width=60% }
+For this analysis, we utilize a different dataset stored in "maketable4.dta". We exclusively employ complete data, identified by 
+baseco=1, for the estimation process.
+
+```{r}
+# 2SLS regression
+# First stage
+df4 <- read_dta('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
+
+# Only complete data, indicated by baseco = 1, is used for estimation
+df4 <- df4 %>%
+  filter(baseco == 1)
+
+# Add constant variable
+df4$const <- 1
+
+# First-stage regression model
+model_fs <- lm(avexpr ~ const + logem4, data = df4, na.action = "drop")
+summary(model_fs)
+```
+
+# Second stage
+
+To proceed, we must obtain the predicted values of avexpr(i). These predicted values are then substituted for the endogenous variable  avexpr(i) in the original linear model.
+
+Consequently, our second stage regression takes the following form:
+![](images/formula3-1.png){ width=60% }
+```{r}
+# Adding predicted avexpr as a new variable
+df4$predicted_avexpr <- predict(model_fs, newdata = df4)
+
+# Second-stage regression with predicted avexpr
+model_ss <- lm(logpgp95 ~ const + predicted_avexpr, data = df4)
+summary(model_ss)
+```
+
+The second-stage regression results provide us with an unbiased and consistent estimate of the impact of institutions on economic outcomes. Our findings align with those of the original paper, affirming the robustness of the analysis.
+
