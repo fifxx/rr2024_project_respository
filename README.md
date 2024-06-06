@@ -71,7 +71,7 @@ HTML File (RR.html) - The report in HTML.
 
 Images - Visualizations and plots generated during the analysis.
 
-README.md: This file, providing an overview of the project and instructions for replication.
+README.md - Providing an overview of the project and instructions for replication.
 
 # How to Run the Analysis
 1) Clone the Repository using f.e. git clone <https://github.com/fifxx/rr2024_project_respository>
