@@ -50,18 +50,17 @@ Risk Services Group.
 
 Our main objectives were:
 
--   **Reproduction**: To accurately replicate the original analysis
-    using R to ensure the results are consistent with those obtained in
-    Python.
+-   To accurately **replicate** the original analysis using R to ensure
+    the results are consistent with those obtained in Python.
 
--   **Enhancement**: To improve the analysis by including additional
-    steps such as handling missing values, refining variable selection,
-    and any other modifications that arise during the analysis.
+-   To **improve** the analysis by including additional steps such as
+    handling missing values, refining variable selection, and any other
+    modifications that arise during the analysis.
 
 # 2. Methodology
 
-We will translate the original Python code to R and perform the analysis
-using RStudio and GitHub for collaboration. The final report will be
+We translated the original Python code to R and performed the analysis
+using RStudio and GitHub for collaboration. The final report is
 presented in R Markdown to ensure reproducibility and clarity.
 
 ## 2.1 Data
@@ -73,29 +72,38 @@ between the Python and R implementations of the analysis.
 
 ## 2.2 Tools Used
 
--   **RStudio**: For coding and analysis.
--   **GitHub**: For version control and collaboration.
--   **R Markdown**: For documenting and presenting the analysis.
+-   **RStudio** for coding and analysis.
+
+-   **R Markdown** for documenting and presenting the analysis.
+
+-   **GitHub** for version control and collaboration.
+
+-   **AI** for charts generation and code corrections.
 
 # 3. Report Outline
 
 The report is structured as follows:
 
--   **Data Overview**: A comprehensive look at the data used in the
+-   **Data Overview** - A comprehensive look at the data used in the
     analysis.
--   **Data Preparation**: Steps taken to clean and preprocess the data.
--   **Simple Linear Regression Model**: Analysis of the basic linear
+
+-   **Data Preparation** - Steps taken to clean and preprocess the data.
+
+-   **Simple Linear Regression Model** - Analysis of the basic linear
     relationship between the variables.
--   **Multivariate Regression Model**: Examination of the multiple
+
+-   **Multivariate Regression Model** - Examination of the multiple
     linear relationships and their interactions.
--   **Endogeneity (Two-stage Least Squares (2SLS) Regression Model)**:
+
+-   **Endogeneity (Two-stage Least Squares (2SLS) Regression Model)** -
     Addressing potential endogeneity issues using a two-stage regression
     approach.
--   **Summary**: Conclusions and insights derived from the analysis.
 
-Through this project, we aim to not only replicate the original findings
-but also explore potential improvements and document any differences in
-the results due to the use of R instead of Python.
+-   **Summary** - Conclusions and insights derived from the analysis.
+
+Through this project, we aimed to not only replicate the original
+findings but also explore potential improvements and document any
+differences in the results due to the use of R instead of Python.
 
 # 4. Data overview
 
@@ -144,20 +152,31 @@ The dataset consists of various columns, each representing different
 variables used in the regression analysis. As shown, the dataset
 includes the following key variables:
 
--   `shortnam`: Country code (e.g., AFG for Afghanistan, AGO for
+-   `shortnam` - Country code (e.g., AFG for Afghanistan, AGO for
     Angola).
--   `euro1900`: European settler mortality rates in 1900.
--   `excolony`: Indicator variable for whether the country was a former
+
+-   `euro1900` - European settler mortality rates in 1900.
+
+-   `excolony` - Indicator variable for whether the country was a former
     colony.
--   `avexpr`: Average protection against expropriation risk (1985-1995).
--   `logpgp95`: Logarithm of GDP per capita in 1995.
+
+-   `avexpr` - Average protection against expropriation risk
+    (1985-1995).
+
+-   `logpgp95` - Logarithm of GDP per capita in 1995.
+
 -   `cons1`, `cons90`, `cons00a`, `cons00aa`: Various measures of
     constraint on the executive.
--   `democ00a`: Democracy indicator.
--   `extmort4`: European settler mortality rates.
--   `logem4`: Log of European settler mortality rates.
--   `loghjypl`: Log of income per capita from Hall and Jones (1999).
--   `baseco`: Indicator for the base sample used in the analysis.
+
+-   `democ00a` - Democracy indicator.
+
+-   `extmort4` - European settler mortality rates.
+
+-   `logem4` - Log of European settler mortality rates.
+
+-   `loghjypl` - Log of income per capita from Hall and Jones (1999).
+
+-   `baseco` - Indicator for the base sample used in the analysis.
 
 From the initial data preview, we observe that there are missing values
 in several columns, such as `avexpr` and `logpgp95`. This highlights the
@@ -258,11 +277,7 @@ ggplot(df_clean, aes(x = avexpr, y = logpgp95)) +
 ![](images/scatter-01.png)
 
 The plots above show the comparison of the scatter plots generated using
-R and Python:
-
--   R Plot: The first plot (black points).
--   Python Plot: The second plot (blue points) with the same axis limits
-    for comparison.
+R and Python.
 
 The adjusted plots ensure that both visualizations are directly
 comparable, highlighting the strong positive correlation between
@@ -289,7 +304,6 @@ fits the data, as in the following plots:
 df_subset <- df_clean %>%
   filter(baseco == 1)
 
-# Scatter plot with country labels
 ggplot(df_subset, aes(x = avexpr, y = logpgp95)) +
   geom_point(color = "blue") +
   geom_text_repel(aes(label = shortnam), size = 3) +
@@ -335,25 +349,24 @@ data <- data.frame(
 kable(data)
 ```
 
--   Intercept and Slope: Both the intercept (4.626 in R vs. 4.6261 in
-    Python) and the slope (0.532 in R vs. 0.5319 in Python) are nearly
-    identical, indicating that the linear relationships captured by both
-    models are consistent.The positive β1 parameter estimate implies
-    that institutional quality has a positive effect on economic
-    outcomes, as we saw in the figure. Also the p-value of 0.000 for β1
-    implies that the effect of institutions on GDP is statistically
-    significant (using p \< 0.05 as a rejection rule).
+-   Both the intercept (4.626 in R vs. 4.6261 in Python) and the slope
+    (0.532 in R vs. 0.5319 in Python) are nearly identical, indicating
+    that the linear relationships captured by both models are
+    consistent.The positive β1 parameter estimate implies that
+    institutional quality has a positive effect on economic outcomes, as
+    we saw in the figure. Also the p-value of 0.000 for β1 implies that
+    the effect of institutions on GDP is statistically significant
+    (using p \< 0.05 as a rejection rule).
 
--   R-squared: The R-squared value, which indicates the proportion of
-    the variance in the dependent variable that is predictable from the
-    independent variable, is the same (0.611) in both R and Python. The
-    of 0.611 indicates that around 61% of variation in log GDP per
-    capita is explained by protection against expropriation.
+-   The R-squared value, which indicates the proportion of the variance
+    in the dependent variable that is predictable from the independent
+    variable, is the same (0.611) in both R and Python. The of 0.611
+    indicates that around 61% of variation in log GDP per capita is
+    explained by protection against expropriation.
 
--   F-statistic: The F-statistic values (171.438 in R vs. 171.4 in
-    Python) are also very close, suggesting that the overall
-    significance of the model is consistent between both
-    implementations.
+-   The F-statistic values (171.438 in R vs. 171.4 in Python) are also
+    very close, suggesting that the overall significance of the model is
+    consistent between both implementations.
 
 Using our parameter estimates, we can now write our estimated
 relationship as
@@ -391,6 +404,7 @@ consider other factors such as:
 
 -   The effect of climate on economic outcomes; latitude is used to
     proxy this.
+
 -   Differences that affect both economic performance and institutions,
     e.g., cultural, historical, etc.; controlled for with the use of
     continent dummies.
@@ -409,8 +423,8 @@ Next, we define three sets of explanatory variables to be used in
 separate regression models:
 
 -   **Model 1**: Includes the constant term and `avexp`r.
--   **Model 3**: Includes the constant term, `avexp`r, and `lat_abst`.
--   **Model 4**: Includes the constant term, `avexpr`, `lat_abst`,
+-   **Model 2**: Includes the constant term, `avexp`r, and `lat_abst`.
+-   **Model 3**: Includes the constant term, `avexpr`, `lat_abst`,
     `asia`, `africa`, and `other`.
 
 ```{r}
@@ -421,7 +435,7 @@ reg3 <- lm(logpgp95 ~ const + avexpr + lat_abst + asia + africa + other, data = 
 stargazer(reg1, reg2, reg3,
           type = "text",
           title = "Table 2 - OLS Regressions (made in R)",
-          column.labels = c("Model 1", "Model 3", "Model 4"),
+          column.labels = c("Model 1", "Model 2", "Model 3"),
           dep.var.labels = "logpgp95",
           covariate.labels = c("Constant", "Average Expropriation Risk", "Latitude", "Asia", "Africa", "Other"),
           keep.stat = c("n", "rsq"),
@@ -430,22 +444,22 @@ stargazer(reg1, reg2, reg3,
           digits = 2)
 ```
 
--   **Model 1**: The regression includes only the constant term and
+-   In **Model 1** the regression includes only the constant term and
     avexpr. The coefficient for avexpr is positive and highly
     significant, suggesting that higher protection against expropriation
     is associated with higher GDP per capita.
 
--   **Model 3**: This model adds lat_abst to control for the effect of
-    climate on economic outcomes. The coefficient for lat_abst is
-    positive but only marginally significant.
+-   **Model 2** adds lat_abst to control for the effect of climate on
+    economic outcomes. The coefficient for lat_abst is positive but only
+    marginally significant.
 
--   **Model 4**: The most comprehensive model includes asia, africa, and
-    other dummy variables to control for continent-level differences.
-    The coefficient for africa is negative and highly significant,
-    indicating that, holding other factors constant, African countries
-    have lower GDP per capita. The coefficient for avexpr remains
-    positive and significant, though its magnitude decreases slightly
-    compared to the previous models.
+-   **Model 3** is the most comprehensive model which includes asia,
+    africa, and other dummy variables to control for continent-level
+    differences. The coefficient for africa is negative and highly
+    significant, indicating that, holding other factors constant,
+    African countries have lower GDP per capita. The coefficient for
+    avexpr remains positive and significant, though its magnitude
+    decreases slightly compared to the previous models.
 
 ```{r}
 multivariate_data <- data.frame(
@@ -492,19 +506,22 @@ Dr. Acemoglu identified a significant issue with Ordinary Least Squares
 inconsistent estimates. Specifically, there is a two-way relationship
 between institutions and economic outcomes:
 
--   Wealthier nations tend to develop better institutions
+-   Wealthier nations tend to develop better institutions.
+
 -   Factors affecting income might also influence institutional
-    variations
+    variations.
+
 -   Institutional indices might be biased, as analysts could link higher
-    incomes with better institutions
+    incomes with better institutions.
 
 To tackle endogeneity, we used a two-stage least squares (2SLS)
 regression. This method replaces the endogenous variable avexpr(i) with
 an instrumental variable that:
 
--   Correlates with avexpr(i)
+-   Correlates with avexpr(i).
+
 -   Is not correlated with the error term, avoiding direct effects on
-    the dependent variable and thus preventing correlation with u(i)
+    the dependent variable and thus preventing correlation with u(i).
 
 These new regressors, known as instruments, help eliminate endogeneity
 in assessing institutional differences. We used settler mortality rates
@@ -521,13 +538,11 @@ address endogeneity and evaluate the impact of institutional differences
 on economic outcomes.
 
 ```{r fig.width=9, message=FALSE, warning=FALSE}
-# Subsetting data to remove rows with missing values in logem4 and avexpr
 df1_subset2 <- df[complete.cases(df[c("logem4", "avexpr")]) , ]
 X <- df1_subset2$logem4
 y <- df1_subset2$avexpr
 labels <- df1_subset2$shortnam
 
-# Scatter plot with labels
 ggplot(df1_subset2, aes(x = logem4, y = avexpr)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
@@ -572,21 +587,15 @@ For this analysis, we utilize a different dataset stored in
 baseco=1, for the estimation process.
 
 ```{r}
-# 2SLS regression
-# First stage
 df4 <- read_dta('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
 
-# Only complete data, indicated by baseco = 1, is used for estimation
 df4 <- df4 %>%
   filter(baseco == 1)
 
-# Add constant variable
 df4$const <- 1
 
-# First-stage regression model
 model_fs <- lm(avexpr ~ const + logem4, data = df4, na.action = "drop")
 
-# Present the results using stargazer
 stargazer(model_fs, type = "text", title = "First-Stage Regression Results (2SLS)", 
           covariate.labels = c("Constant", "Log of European Settler Mortality"),
           dep.var.labels = "Average Expropriation Risk",
@@ -612,10 +621,8 @@ Consequently, our second stage regression takes the following form:
 ![](images/formula3-1.png){width="60%"}
 
 ```{r}
-# Adding predicted avexpr as a new variable
 df4$predicted_avexpr <- predict(model_fs, newdata = df4)
 
-# Second-stage regression with predicted avexpr
 model_ss <- lm(logpgp95 ~ const + predicted_avexpr, data = df4)
 
 stargazer(model_ss, type = "text", 
@@ -648,10 +655,8 @@ Instead, we will appropriately estimate a 2SLS regression in one step
 using the ivreg function from the AER package.
 
 ```{r}
-# Second-stage regression using Two-Stage Least Squares (2SLS)
 model_ss <- ivreg(logpgp95 ~ avexpr + const | logem4 + const, data = df4)
 
-# Summary of the second-stage regression using stargazer
 stargazer(model_ss, type = "text", 
           title = "Second-Stage Regression Results (2SLS)", 
           covariate.labels = c("Average Expropriation Risk", "Constant"),

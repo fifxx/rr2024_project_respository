@@ -15,6 +15,7 @@ This project aims to reproduce and enhance the data analysis and regression orig
 
 # Objectives
 Reproduction: Accurately replicate the original analysis using R to ensure the results are consistent with those obtained in Python.
+
 Enhancement: Improve the analysis by including additional steps such as handling missing values, refining variable selection, and any other modifications that arise during the analysis.
 
 # Methodology
