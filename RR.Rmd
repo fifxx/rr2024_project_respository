@@ -178,11 +178,6 @@ includes the following key variables:
 
 -   `baseco` - Indicator for the base sample used in the analysis.
 
-From the initial data preview, we observe that there are missing values
-in several columns, such as `avexpr` and `logpgp95`. This highlights the
-need for careful data cleaning and preparation before proceeding with
-the regression analysis.
-
 The dataset includes key indicators for economic outcomes and
 institutional differences, which will be pivotal in our subsequent
 regression models. Specifically, `logpgp95` serves as the dependent
@@ -213,7 +208,7 @@ variables, including `avexpr` and `logpgp95`.
 
 Given the presence of missing values, we need to decide on an
 appropriate strategy to handle them. For simplicity, we choose to omit
-any rows where avexpr or logpgp95 are missing. This ensures that our
+any rows where `avexpr` or `logpgp95` are missing. This ensures that our
 regression analysis is based on complete cases.
 
 ```{r message=FALSE, warning=FALSE}
@@ -289,12 +284,12 @@ Given the plot, We can write our model as:
 
 where:
 
--   β0 is the intercept of the linear trend line on the y-axis,
+-   `β0` is the intercept of the linear trend line on the y-axis,
 
--   β1 is the slope of the linear trend line, representing the marginal
-    effect of protection against risk on log GDP per capita,
+-   `β1` is the slope of the linear trend line, representing the
+    marginal effect of protection against risk on log GDP per capita,
 
--   u_i is a random error term (deviations of observations from the
+-   `u(i)` is a random error term (deviations of observations from the
     linear trend due to factors not included in the model).
 
 Visually, this linear model involves choosing a straight line that best
@@ -336,7 +331,7 @@ stargazer(reg1, type = "text", title = "OLS Regression Results")
 ```
 
 The summary of the linear regression model provides detailed information
-about the estimated relationship between avexpr and logpgp95. Key
+about the estimated relationship between `avexpr` and `logpgp95`. Key
 metrics include the coefficients, R-squared value, and p-values, which
 indicate the strength and significance of the relationship.
 
@@ -349,24 +344,23 @@ data <- data.frame(
 kable(data)
 ```
 
--   Both the intercept (4.626 in R vs. 4.6261 in Python) and the slope
-    (0.532 in R vs. 0.5319 in Python) are nearly identical, indicating
-    that the linear relationships captured by both models are
-    consistent.The positive β1 parameter estimate implies that
-    institutional quality has a positive effect on economic outcomes, as
-    we saw in the figure. Also the p-value of 0.000 for β1 implies that
-    the effect of institutions on GDP is statistically significant
-    (using p \< 0.05 as a rejection rule).
+Both the intercept (4.626 in R vs. 4.6261 in Python) and the slope
+(0.532 in R vs. 0.5319 in Python) are nearly identical, indicating that
+the linear relationships captured by both models are consistent.The
+positive β1 parameter estimate implies that institutional quality has a
+positive effect on economic outcomes, as we saw in the figure. Also the
+p-value of 0.000 for `β1` implies that the effect of institutions on GDP
+is statistically significant (using p \< 0.05 as a rejection rule).
 
--   The R-squared value, which indicates the proportion of the variance
-    in the dependent variable that is predictable from the independent
-    variable, is the same (0.611) in both R and Python. The of 0.611
-    indicates that around 61% of variation in log GDP per capita is
-    explained by protection against expropriation.
+The R-squared value, which indicates the proportion of the variance in
+the dependent variable that is predictable from the independent
+variable, is the same (0.611) in both R and Python. The of 0.611
+indicates that around 61% of variation in log GDP per capita is
+explained by protection against expropriation.
 
--   The F-statistic values (171.438 in R vs. 171.4 in Python) are also
-    very close, suggesting that the overall significance of the model is
-    consistent between both implementations.
+The F-statistic values (171.438 in R vs. 171.4 in Python) are also very
+close, suggesting that the overall significance of the model is
+consistent between both implementations.
 
 Using our parameter estimates, we can now write our estimated
 relationship as
@@ -402,11 +396,11 @@ We can extend our bivariate regression model to a multivariate
 regression model by adding other factors that may affect `logpgp95`. We
 consider other factors such as:
 
--   The effect of climate on economic outcomes; latitude is used to
+-   The effect of climate on economic outcomes - latitude is used to
     proxy this.
 
 -   Differences that affect both economic performance and institutions,
-    e.g., cultural, historical, etc.; controlled for with the use of
+    e.g., cultural, historical, etc. - controlled for with the use of
     continent dummies.
 
 We use a different dataset for this part of the analysis, which includes
@@ -422,8 +416,8 @@ df2 <- df2 %>%
 Next, we define three sets of explanatory variables to be used in
 separate regression models:
 
--   **Model 1**: Includes the constant term and `avexp`r.
--   **Model 2**: Includes the constant term, `avexp`r, and `lat_abst`.
+-   **Model 1**: Includes the constant term and `avexpr`.
+-   **Model 2**: Includes the constant term, `avexpr`, and `lat_abst`.
 -   **Model 3**: Includes the constant term, `avexpr`, `lat_abst`,
     `asia`, `africa`, and `other`.
 
@@ -444,22 +438,22 @@ stargazer(reg1, reg2, reg3,
           digits = 2)
 ```
 
--   In **Model 1** the regression includes only the constant term and
-    avexpr. The coefficient for avexpr is positive and highly
-    significant, suggesting that higher protection against expropriation
-    is associated with higher GDP per capita.
+In **Model 1** the regression includes only the constant term and
+`avexpr`. The coefficient for `avexpr` is positive and highly
+significant, suggesting that higher protection against expropriation is
+associated with higher GDP per capita.
 
--   **Model 2** adds lat_abst to control for the effect of climate on
-    economic outcomes. The coefficient for lat_abst is positive but only
-    marginally significant.
+**Model 2** adds `lat_abst` to control for the effect of climate on
+economic outcomes. The coefficient for `lat_abst` is positive but only
+marginally significant.
 
--   **Model 3** is the most comprehensive model which includes asia,
-    africa, and other dummy variables to control for continent-level
-    differences. The coefficient for africa is negative and highly
-    significant, indicating that, holding other factors constant,
-    African countries have lower GDP per capita. The coefficient for
-    avexpr remains positive and significant, though its magnitude
-    decreases slightly compared to the previous models.
+**Model 3** is the most comprehensive model which includes `asia`,
+`africa`, and `other` dummy variables to control for continent-level
+differences. The coefficient for `africa` is negative and highly
+significant, indicating that, holding other factors constant, African
+countries have lower GDP per capita. The coefficient for `avexpr`
+remains positive and significant, though its magnitude decreases
+slightly compared to the previous models.
 
 ```{r}
 multivariate_data <- data.frame(
@@ -477,9 +471,7 @@ kable(multivariate_data, col.names = c("Coefficient", "Model 1 in R", "Model 1 i
 ```
 
 The table above compares the results from the multivariate regression
-models conducted in R and Python for three different models. The
-coefficients, along with their corresponding R-squared values, are
-presented side-by-side to facilitate direct comparison.
+models conducted in R and Python for three different models. 
 
 The results are remarkably consistent between R and Python across all
 models. The coefficients and R-squared values are identical,
@@ -518,10 +510,10 @@ To tackle endogeneity, we used a two-stage least squares (2SLS)
 regression. This method replaces the endogenous variable avexpr(i) with
 an instrumental variable that:
 
--   Correlates with avexpr(i).
+-   Correlates with `avexpr(i)`.
 
 -   Is not correlated with the error term, avoiding direct effects on
-    the dependent variable and thus preventing correlation with u(i).
+    the dependent variable and thus preventing correlation with `u(i)`.
 
 These new regressors, known as instruments, help eliminate endogeneity
 in assessing institutional differences. We used settler mortality rates
@@ -571,12 +563,12 @@ endogeneity concerns.
 ## 8.1 First stage
 
 In our research, the first stage entails regressing the endogenous
-variable avexpr(i), on the instrument.
+variable `avexpr(i)`, on the instrument.
 
 The instrument comprises all exogenous variables in our model, not just
 the variable being replaced. Taking model 1 as an instance, our
 instrument consists of a constant and the logarithm of settler mortality
-rates logem4(i).
+rates `logem4(i)`.
 
 Hence, we will estimate the first-stage regression as:
 
@@ -584,7 +576,7 @@ Hence, we will estimate the first-stage regression as:
 
 For this analysis, we utilize a different dataset stored in
 "maketable4.dta". We exclusively employ complete data, identified by
-baseco=1, for the estimation process.
+`baseco=1`, for the estimation process.
 
 ```{r}
 df4 <- read_dta('https://github.com/QuantEcon/lecture-python/blob/master/source/_static/lecture_specific/ols/maketable4.dta?raw=true')
@@ -613,9 +605,9 @@ kable(data)
 
 ## 8.2 Second stage
 
-To proceed, we must obtain the predicted values of avexpr(i). These
+To proceed, we must obtain the predicted values of `avexpr(i)`. These
 predicted values are then substituted for the endogenous variable
-avexpr(i) in the original linear model.
+`avexpr(i)` in the original linear model.
 
 Consequently, our second stage regression takes the following form:
 ![](images/formula3-1.png){width="60%"}
